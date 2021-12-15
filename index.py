@@ -1,6 +1,8 @@
 import os
 
 import discord
+import time
+
 from dotenv import load_dotenv
 
 from discord.ext import commands
@@ -67,8 +69,22 @@ async def create_poll(ctx, question: str = None):
   time.sleep(5)
 
   reactions = await ctx.channel.fetch_message(message.id)
-  yes = get(reactions.reactions, emoji=':white_check_mark:')
-  print(reactions)
+
+  amountOfReaction = len(reactions.reactions)
+  amountOfRoles = len(ctx.guild.roles)
+
+  if amountOfReaction < amountOfRoles:
+    ctx.send(f'At least {amountOfRoles} users should vote')
+
+  yes = get(reactions.reactions, emoji='✅')
+  no = get(reactions.reactions, emoji='❎')
+
+  if yes > no:
+    ctx.send(f'The parlement has voted yes to: {question}')
+  if no > yes:
+    ctx.send(f'The parlement has voted no to: {question}')
+
+  ctx.send(f'The parlement was not able to decide on: {question}')
 
   return
 
